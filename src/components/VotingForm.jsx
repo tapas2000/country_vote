@@ -34,7 +34,7 @@ function VotingForm() {
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = 'Invalid email';
     }
     
     if (!formData.country) {
@@ -68,6 +68,7 @@ function VotingForm() {
       if (response.ok) {
         alert('Vote submitted successfully!');
         setFormData({ name: '', email: '', country: '' });
+        setErrors({});
         // TODO: Refresh country list
       } else {
         const error = await response.json();
@@ -81,76 +82,78 @@ function VotingForm() {
     }
   };
 
+  const isFormValid = formData.name.trim() && formData.email.trim() && formData.country;
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Vote for Your Favorite Country</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Name
-          </label>
+    <div className="bg-white rounded-lg p-8">
+      <h2 className="text-lg font-semibold mb-6 text-gray-900">Vote your Favourite Country</h2>
+      <form onSubmit={handleSubmit} className="flex items-start gap-4">
+        <div className="flex-1">
           <input
             type="text"
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Enter your name"
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400"
+            placeholder="Name"
           />
-          {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
         </div>
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email
-          </label>
+        <div className="flex-1 relative">
           <input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-2.5 border rounded-md text-sm focus:outline-none focus:ring-1 ${
+              errors.email 
+                ? 'border-error focus:ring-error focus:border-error' 
+                : 'border-gray-300 focus:ring-gray-400 focus:border-gray-400'
             }`}
-            placeholder="Enter your email"
+            placeholder="Email"
           />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+          {errors.email && (
+            <>
+              <svg className="absolute right-3 top-3 w-5 h-5 text-error" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              <p className="mt-1 text-xs text-error">{errors.email}</p>
+            </>
+          )}
         </div>
 
-        <div>
-          <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
-            Favorite Country
-          </label>
+        <div className="flex-1">
           <select
             id="country"
             name="country"
             value={formData.country}
             onChange={handleChange}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-              errors.country ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm text-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400 appearance-none bg-white"
+            style={{ 
+              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+              backgroundPosition: 'right 0.5rem center',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '1.5em 1.5em'
+            }}
           >
-            <option value="">Select a country</option>
-            {/* TODO: Populate with countries from API */}
-            <option value="US">United States</option>
-            <option value="GB">United Kingdom</option>
-            <option value="IT">Italy</option>
-            <option value="FR">France</option>
-            <option value="ES">Spain</option>
+            <option value="">Country</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Pakistan">Pakistan</option>
+            <option value="Samoa">Samoa</option>
+            <option value="Djibouti">Djibouti</option>
+            <option value="Ireland">Ireland</option>
+            <option value="Denmark">Denmark</option>
           </select>
-          {errors.country && <p className="mt-1 text-sm text-red-600">{errors.country}</p>}
         </div>
 
         <button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          disabled={!isFormValid || isSubmitting}
+          className="px-6 py-2.5 bg-gray-200 text-gray-500 rounded-md text-sm font-medium hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isSubmitting ? 'Submitting...' : 'Submit Vote'}
+          Submit Vote
         </button>
       </form>
     </div>

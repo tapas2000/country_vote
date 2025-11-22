@@ -1,3 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #e91e63;
+  --color-loop-red: #e91e63;
+  --color-background: #f8f8f8;
+  --color-error: #ff5252;
+  
+  --font-family-sans: Inter, system-ui, sans-serif;
+}
