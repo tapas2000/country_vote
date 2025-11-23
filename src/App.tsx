@@ -1,6 +1,6 @@
 import VoteLayout from './layouts/vote'
 
-function App() {
+const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-[1440px] mx-auto">
@@ -22,7 +22,7 @@ function App() {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
