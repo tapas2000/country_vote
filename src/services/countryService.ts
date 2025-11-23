@@ -104,6 +104,10 @@ export const countryService = {
    * Search/filter countries
    */
   filterCountries(countries: Country[], searchTerm: string): Country[] {
+    if (!countries || countries.length === 0) {
+      return [];
+    }
+
     if (!searchTerm.trim()) {
       return countries;
     }

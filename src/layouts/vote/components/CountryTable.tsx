@@ -1,79 +1,38 @@
 import { useCountries } from '../hooks/useCountries';
+import { STRINGS } from '../../../constants/strings';
 
-interface CountryTableProps {
-  refreshTrigger?: number;
-}
-
-const CountryTable: React.FC<CountryTableProps> = ({ refreshTrigger }) => {
-  const {
-    countries,
-    searchTerm,
-    isLoading,
-    handleSearch,
-    refreshCountries,
-  } = useCountries();
-
-  // Refresh when parent triggers it
-  if (refreshTrigger) {
-    refreshCountries();
-  }
+const CountryTable: React.FC = () => {
+  const { countries, isLoading } = useCountries();
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg p-8">
+      <div className="base_card">
         <div className="text-center py-8">
-          <p className="text-gray-600">Loading countries...</p>
+          <p className="text-gray-600">{STRINGS.LOADING_COUNTRIES}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg p-8">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">Top 10 Most Voted Countries</h2>
-        <div className="relative max-w-md">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search Country, Capital City, Region or Subregion"
-            value={searchTerm}
-            onChange={handleSearch}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400"
-          />
-        </div>
-      </div>
-
-      <div className="overflow-x-auto">
+    <div className="base_card">
         <table className="min-w-full">
           <thead>
             <tr className="border-b border-gray-200">
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
-                Country
+                {STRINGS.TABLE_HEADER_COUNTRY}
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
-                Capital City
+                {STRINGS.TABLE_HEADER_CAPITAL_CITY}
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
-                Region
+                {STRINGS.TABLE_HEADER_REGION}
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
-                Sub Region
+                {STRINGS.TABLE_HEADER_SUB_REGION}
               </th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
-                Votes
+                {STRINGS.TABLE_HEADER_VOTES}
               </th>
             </tr>
           </thead>
@@ -101,13 +60,12 @@ const CountryTable: React.FC<CountryTableProps> = ({ refreshTrigger }) => {
             ) : (
               <tr>
                 <td colSpan={5} className="px-4 py-4 text-center text-sm text-gray-500">
-                  No countries found
+                  {STRINGS.NO_COUNTRIES_FOUND}
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
     </div>
   );
 };

@@ -27,8 +27,10 @@ export const useCountries = (): UseCountriesReturn => {
 
   // Filter countries when search term changes
   useEffect(() => {
-    const filtered = countryService.filterCountries(countries, searchTerm);
-    setFilteredCountries(filtered);
+    if (countries && countries.length > 0) {
+      const filtered = countryService.filterCountries(countries, searchTerm);
+      setFilteredCountries(filtered);
+    }
   }, [searchTerm, countries]);
 
   const fetchCountries = async () => {

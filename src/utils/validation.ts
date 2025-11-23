@@ -1,5 +1,6 @@
 // Validation utilities
 import { Vote, ValidationErrors } from '../types';
+import { STRINGS } from '../constants/strings';
 
 export const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -18,17 +19,17 @@ export const validateForm = (formData: Vote): ValidationErrors => {
   const errors: ValidationErrors = {};
   
   if (!validateName(formData.name)) {
-    errors.name = 'Name is required';
+    errors.name = STRINGS.NAME_REQUIRED;
   }
   
   if (!formData.email.trim()) {
-    errors.email = 'Email is required';
+    errors.email = STRINGS.EMAIL_REQUIRED;
   } else if (!validateEmail(formData.email)) {
-    errors.email = 'Invalid email';
+    errors.email = STRINGS.INVALID_EMAIL;
   }
   
   if (!validateCountry(formData.country)) {
-    errors.country = 'Please select a country';
+    errors.country = STRINGS.COUNTRY_REQUIRED;
   }
   
   return errors;
