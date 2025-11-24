@@ -14,8 +14,8 @@ const CountryTable: React.FC<CountryTableProps> = ({ countries, isLoading }) => 
   }
 
   return (
-    <div className="base_card base_card__no__x_padding">
-        <table className="min-w-full">
+    <div className="base_card base_card__no__x_padding overflow-x-auto">
+        <table className="min-w-full border-separate" style={{ borderSpacing: '0 8px' }}>
           <thead>
             <tr>
               <th className="table_header">

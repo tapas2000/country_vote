@@ -89,7 +89,7 @@ const VotingForm: React.FC<VotingFormProps> = ({ onVoteSuccess, showSuccess, sho
         <h2 className="text-sm font-bold mb-3.5 text-gray-900">
           {STRINGS.VOTE_FORM_TITLE}
         </h2>
-      <form onSubmit={handleSubmit} className="flex items-start gap-4" noValidate>
+      <form onSubmit={handleSubmit} className="flex items-center sm:items-start flex-col sm:flex-row gap-4" noValidate>
         <Input
           type="text"
           id="name"

@@ -15,15 +15,15 @@ interface UseVoteFormReturn {
 }
 
 export const useVoteForm = (): UseVoteFormReturn => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Vote>({
     name: '',
     email: '',
     country: ''
   });
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -31,7 +31,7 @@ export const useVoteForm = (): UseVoteFormReturn => {
     }));
     
     // Clear error when user starts typing
-    if (errors[name]) {
+    if (errors[name as keyof ValidationErrors]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
@@ -39,7 +39,7 @@ export const useVoteForm = (): UseVoteFormReturn => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     // Validate form
@@ -63,13 +63,13 @@ export const useVoteForm = (): UseVoteFormReturn => {
         return { success: false, error: result.error };
       }
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const isFormValid = formData.name.trim() && formData.email.trim() && formData.country;
+  const isFormValid = Boolean(formData.name.trim() && formData.email.trim() && formData.country);
 
   return {
     formData,

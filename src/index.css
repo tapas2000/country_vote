@@ -109,14 +109,10 @@ div.no_gap {
   font-weight: 500;
   font-style: Medium;
   font-weight: 500;
-  padding: 20px 8px 20px 16px;
+  padding: 20px 0px 20px 16px;
   color: var(--color-dark);
 }
 
-.table_cell:first-child {
-  padding-left: 16px;
-}
-
-.table_cell:last-child {
-  padding-right: 16px;
+table.border-separate {
+  border-collapse: separate;
 }
