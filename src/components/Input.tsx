@@ -1,4 +1,5 @@
 import React from 'react';
+import warningIcon from '../assets/icons/warningIcon.svg';
 
 interface InputProps {
   type?: 'text' | 'email' | 'password';
@@ -6,6 +7,7 @@ interface InputProps {
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   placeholder?: string;
   error?: string;
   className?: string;
@@ -17,6 +19,7 @@ const Input: React.FC<InputProps> = ({
   name,
   value,
   onChange,
+  onBlur,
   placeholder,
   error,
   className = '',
@@ -29,26 +32,21 @@ const Input: React.FC<InputProps> = ({
         name={name}
         value={value}
         onChange={onChange}
-        className={`w-full px-4 py-2.5 border rounded-md text-sm focus:outline-none focus:ring-1 ${
+        onBlur={onBlur}
+        className={`w-full py-2.5 border rounded-md text-sm focus:outline-none focus:ring-1 ${
           error
-            ? 'border-error focus:ring-error focus:border-error'
-            : 'border-gray-300 focus:ring-gray-400 focus:border-gray-400'
+            ? 'border-error focus:ring-error focus:border-error pl-4 pr-11'
+            : 'border-gray-300 focus:ring-gray-400 focus:border-gray-400 px-4'
         }`}
         placeholder={placeholder}
       />
       {error && (
         <>
-          <svg 
-            className="absolute right-3 top-3 w-5 h-5 text-error pointer-events-none" 
-            fill="currentColor" 
-            viewBox="0 0 20 20"
-          >
-            <path 
-              fillRule="evenodd" 
-              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" 
-              clipRule="evenodd" 
-            />
-          </svg>
+          <img 
+            src={warningIcon} 
+            alt="Warning" 
+            className="absolute right-3 top-3 w-5 h-5 pointer-events-none" 
+          />
           <p className="mt-1 text-xs text-error">{error}</p>
         </>
       )}

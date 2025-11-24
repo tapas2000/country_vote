@@ -1,9 +1,10 @@
 // Custom hook for managing vote form state and submission
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent, FocusEvent } from 'react';
 import { voteService } from '../../../services/voteService';
-import { validateForm } from '../../../utils/validation';
+import { validateForm, validateEmail, validateName } from '../../../utils/validation';
 import { Vote, ValidationErrors } from '../../../types';
+import { STRINGS } from '../../../constants/strings';
 
 interface UseVoteFormReturn {
   formData: Vote;
@@ -11,6 +12,7 @@ interface UseVoteFormReturn {
   isSubmitting: boolean;
   isFormValid: boolean;
   handleChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  handleBlur: (e: FocusEvent<HTMLInputElement>) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<{ success: boolean; error?: string }>;
 }
 
@@ -36,6 +38,37 @@ export const useVoteForm = (): UseVoteFormReturn => {
         ...prev,
         [name]: ''
       }));
+    }
+  };
+
+  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    // Validate field on blur
+    if (name === 'email' && value.trim()) {
+      if (!validateEmail(value)) {
+        setErrors(prev => ({
+          ...prev,
+          email: STRINGS.INVALID_EMAIL
+        }));
+      } else {
+        setErrors(prev => ({
+          ...prev,
+          email: ''
+        }));
+      }
+    } else if (name === 'name' && value.trim()) {
+      if (!validateName(value)) {
+        setErrors(prev => ({
+          ...prev,
+          name: STRINGS.NAME_REQUIRED
+        }));
+      } else {
+        setErrors(prev => ({
+          ...prev,
+          name: ''
+        }));
+      }
     }
   };
 
@@ -69,7 +102,14 @@ export const useVoteForm = (): UseVoteFormReturn => {
     }
   };
 
-  const isFormValid = Boolean(formData.name.trim() && formData.email.trim() && formData.country);
+  const isFormValid = Boolean(
+    formData.name.trim() && 
+    formData.email.trim() && 
+    formData.country &&
+    !errors.name &&
+    !errors.email &&
+    !errors.country
+  );
 
   return {
     formData,
@@ -77,6 +117,7 @@ export const useVoteForm = (): UseVoteFormReturn => {
     isSubmitting,
     isFormValid,
     handleChange,
+    handleBlur,
     handleSubmit,
   };
 };

@@ -1,26 +1,36 @@
 // Vote Layout - Main component that orchestrates the voting feature
 
-import { useState } from 'react';
-import VotingForm from './components/VotingForm';
-import CountryTable from './components/CountryTable';
-import SearchInput from '../../components/SearchInput';
-import { STRINGS } from '../../constants/strings';
-import { useCountries } from './hooks/useCountries';
+import VotingForm from "./components/VotingForm";
+import CountryTable from "./components/CountryTable";
+import SearchInput from "../../components/SearchInput";
+import Toast from "../../components/Toast";
+import { STRINGS } from "../../constants/strings";
+import { useCountries } from "./hooks/useCountries";
+import { useToast } from "../../hooks/useToast";
 
 const VoteLayout: React.FC = () => {
-  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
-  const { searchTerm, handleSearch } = useCountries();
+  const { countries, searchTerm, isLoading, handleSearch, refreshCountries } =
+    useCountries();
+  const { toast, showSuccess, showError, hideToast } = useToast();
 
   const handleVoteSuccess = () => {
-    // Trigger a refresh of the country table
-    setRefreshTrigger(prev => prev + 1);
+    // Refresh the country data after successful vote
+    refreshCountries();
   };
 
   return (
-    <div className="space-y-12 px-[173px]">
-      <VotingForm onVoteSuccess={handleVoteSuccess} />
-      
-      <div className="max-w-[1062px]">
+    <div className="w-full flex flex-col justify-center md:max-w-[1062px] md:mx-auto space-y-12">
+      {toast.isVisible && (
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+      )}
+
+      <VotingForm
+        onVoteSuccess={handleVoteSuccess}
+        showSuccess={showSuccess}
+        showError={showError}
+      />
+
+      <div className="w-full">
         <div className="mb-6">
           <h2 className="font-bold mb-6 text-gray-900 text-[32px] leading-6">
             {STRINGS.TOP_TEN_COUNTRIES}
@@ -31,8 +41,8 @@ const VoteLayout: React.FC = () => {
             placeholder={STRINGS.SEARCH_PLACEHOLDER}
           />
         </div>
-        
-        <CountryTable key={refreshTrigger} />
+
+        <CountryTable countries={countries} isLoading={isLoading} />
       </div>
     </div>
   );

@@ -17,16 +17,28 @@ export const voteService = {
         body: JSON.stringify(voteData),
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to submit vote');
+        // Handle validation errors (400)
+        if (result.errors && Array.isArray(result.errors)) {
+          return { 
+            success: false, 
+            error: result.errors[0]?.message || 'Validation failed',
+            errors: result.errors 
+          };
+        }
+        // Handle duplicate email (409) or other errors
+        if (result.error?.message) {
+          return { success: false, error: result.error.message };
+        }
+        return { success: false, error: result.message || 'Failed to submit vote' };
       }
 
-      return { success: true, data };
+      return { success: true, data: result.data };
     } catch (error) {
       console.error('Error submitting vote:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage = error instanceof Error ? error.message : 'Network error. Please try again.';
       return { success: false, error: errorMessage };
     }
   },

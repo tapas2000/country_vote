@@ -1,8 +1,68 @@
 // Custom hook for fetching and managing countries data
 
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useReducer, useEffect, ChangeEvent } from 'react';
 import { countryService } from '../../../services/countryService';
 import { Country } from '../../../types';
+
+interface CountriesState {
+  allCountries: Country[];
+  filteredCountries: Country[];
+  searchTerm: string;
+  isLoading: boolean;
+  error: string | null;
+}
+
+type CountriesAction =
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: Country[] }
+  | { type: 'FETCH_ERROR'; payload: string }
+  | { type: 'SET_SEARCH'; payload: string }
+  | { type: 'FILTER_COUNTRIES'; payload: Country[] };
+
+const initialState: CountriesState = {
+  allCountries: [],
+  filteredCountries: [],
+  searchTerm: '',
+  isLoading: true,
+  error: null,
+};
+
+const countriesReducer = (state: CountriesState, action: CountriesAction): CountriesState => {
+  switch (action.type) {
+    case 'FETCH_START':
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    case 'FETCH_SUCCESS':
+      return {
+        ...state,
+        allCountries: action.payload,
+        filteredCountries: action.payload,
+        isLoading: false,
+        error: null,
+      };
+    case 'FETCH_ERROR':
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload,
+      };
+    case 'SET_SEARCH':
+      return {
+        ...state,
+        searchTerm: action.payload,
+      };
+    case 'FILTER_COUNTRIES':
+      return {
+        ...state,
+        filteredCountries: action.payload,
+      };
+    default:
+      return state;
+  }
+};
 
 interface UseCountriesReturn {
   countries: Country[];
@@ -14,11 +74,7 @@ interface UseCountriesReturn {
 }
 
 export const useCountries = (): UseCountriesReturn => {
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [filteredCountries, setFilteredCountries] = useState<Country[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(countriesReducer, initialState);
 
   // Fetch countries on mount
   useEffect(() => {
@@ -27,34 +83,31 @@ export const useCountries = (): UseCountriesReturn => {
 
   // Filter countries when search term changes
   useEffect(() => {
-    if (countries && countries.length > 0) {
-      const filtered = countryService.filterCountries(countries, searchTerm);
-      setFilteredCountries(filtered);
+    if (state.allCountries && state.allCountries.length > 0) {
+      const filtered = countryService.filterCountries(state.allCountries, state.searchTerm);
+      dispatch({ type: 'FILTER_COUNTRIES', payload: filtered });
     }
-  }, [searchTerm, countries]);
+  }, [state.searchTerm, state.allCountries]);
 
   const fetchCountries = async () => {
-    setIsLoading(true);
-    setError(null);
+    dispatch({ type: 'FETCH_START' });
     
     try {
       const result = await countryService.getTopCountries();
       
       if (result.success) {
-        setCountries(result.data || []);
-        setFilteredCountries(result.data || []);
+        dispatch({ type: 'FETCH_SUCCESS', payload: result.data || [] });
       } else {
-        setError('Failed to fetch countries');
+        dispatch({ type: 'FETCH_ERROR', payload: 'Failed to fetch countries' });
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setIsLoading(false);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      dispatch({ type: 'FETCH_ERROR', payload: errorMessage });
     }
   };
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    dispatch({ type: 'SET_SEARCH', payload: e.target.value });
   };
 
   const refreshCountries = () => {
@@ -62,10 +115,10 @@ export const useCountries = (): UseCountriesReturn => {
   };
 
   return {
-    countries: filteredCountries,
-    searchTerm,
-    isLoading,
-    error,
+    countries: state.filteredCountries,
+    searchTerm: state.searchTerm,
+    isLoading: state.isLoading,
+    error: state.error,
     handleSearch,
     refreshCountries,
   };

@@ -3,74 +3,74 @@
 import { API_ENDPOINTS, HTTP_METHODS } from '../utils/api';
 import { Country, ServiceResponse } from '../types';
 
-// Mock data for development
+// Mock data for development (fallback if API fails)
 const MOCK_COUNTRIES: Country[] = [
   {
     name: 'Pakistan',
-    capital: 'Islamabad',
+    capital: ['Islamabad'],
     region: 'Asia',
-    subRegion: 'Southern Africa',
+    subRegion: 'Southern Asia',
     votes: 982
   },
   {
     name: 'Samoa',
-    capital: 'Apia',
+    capital: ['Apia'],
     region: 'Oceania',
     subRegion: 'Polynesia',
     votes: 839
   },
   {
     name: 'Djibouti',
-    capital: 'Djibouti',
+    capital: ['Djibouti'],
     region: 'Africa',
     subRegion: 'Eastern Africa',
     votes: 730
   },
   {
     name: 'Ireland',
-    capital: 'Dublin',
+    capital: ['Dublin'],
     region: 'Europe',
-    subRegion: 'Nothern Europe',
+    subRegion: 'Northern Europe',
     votes: 645
   },
   {
     name: 'Denmark',
-    capital: 'Copenhagen',
+    capital: ['Copenhagen'],
     region: 'Europe',
-    subRegion: 'Nothern Europe',
+    subRegion: 'Northern Europe',
     votes: 560
   },
   {
     name: 'Christmas Island',
-    capital: 'Flying Fish Cove',
+    capital: ['Flying Fish Cove'],
     region: 'Oceania',
-    subRegion: 'Australia and...',
+    subRegion: 'Australia and New Zealand',
     votes: 472
   },
   {
     name: 'Namibia',
-    capital: 'Windhoek',
+    capital: ['Windhoek'],
     region: 'Africa',
     subRegion: 'Southern Africa',
     votes: 432
   },
   {
-    name: 'French Polinesia',
-    capital: 'Papeete',
+    name: 'French Polynesia',
+    capital: ['Papeete'],
     region: 'Oceania',
     subRegion: 'Polynesia',
     votes: 307
   },
   {
     name: 'North Macedonia',
-    capital: 'Skopje',
+    capital: ['Skopje'],
     region: 'Europe',
     subRegion: 'Southeast Europe',
     votes: 215
   },
   {
     name: 'Eritrea',
-    capital: 'Asmara',
+    capital: ['Asmara'],
     region: 'Africa',
     subRegion: 'Eastern Africa',
     votes: 215
@@ -79,11 +79,40 @@ const MOCK_COUNTRIES: Country[] = [
 
 export const countryService = {
   /**
-   * Get top 10 countries
+   * Get all countries for dropdown selection
    */
-  async getTopCountries(): Promise<ServiceResponse<Country[]>> {
+  async getAllCountries(): Promise<ServiceResponse<Country[]>> {
     try {
-      const response = await fetch(API_ENDPOINTS.TOP_COUNTRIES, {
+      // Use top countries endpoint with large limit to get all countries
+      const url = `${API_ENDPOINTS.TOP_COUNTRIES}?limit=250`;
+      const response = await fetch(url, {
+        method: HTTP_METHODS.GET,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch all countries');
+      }
+
+      const result = await response.json();
+      // Sort alphabetically by name
+      const sortedCountries = (result.data || []).sort((a: Country, b: Country) => 
+        a.name.localeCompare(b.name)
+      );
+      return { success: true, data: sortedCountries };
+    } catch (error) {
+      console.error('Error fetching all countries:', error);
+      // Return empty array if API fails
+      return { success: true, data: [] };
+    }
+  },
+
+  /**
+   * Get top countries with optional limit
+   */
+  async getTopCountries(limit: number = 10): Promise<ServiceResponse<Country[]>> {
+    try {
+      const url = `${API_ENDPOINTS.TOP_COUNTRIES}?limit=${limit}`;
+      const response = await fetch(url, {
         method: HTTP_METHODS.GET,
       });
 
@@ -91,8 +120,8 @@ export const countryService = {
         throw new Error('Failed to fetch countries');
       }
 
-      const data = await response.json();
-      return { success: true, data };
+      const result = await response.json();
+      return { success: true, data: result.data || [] };
     } catch (error) {
       console.error('Error fetching countries:', error);
       // Return mock data if API fails
@@ -113,11 +142,16 @@ export const countryService = {
     }
 
     const term = searchTerm.toLowerCase();
-    return countries.filter(country =>
-      country.name.toLowerCase().includes(term) ||
-      country.capital.toLowerCase().includes(term) ||
-      country.region.toLowerCase().includes(term) ||
-      country.subRegion.toLowerCase().includes(term)
-    );
+    return countries.filter(country => {
+      const capitalStr = Array.isArray(country.capital) 
+        ? country.capital.join(', ') 
+        : country.capital;
+      
+      return country.name.toLowerCase().includes(term) ||
+        capitalStr.toLowerCase().includes(term) ||
+        country.region.toLowerCase().includes(term) ||
+        country.subRegion.toLowerCase().includes(term) ||
+        country.votes.toString().includes(term);
+    });
   },
 };

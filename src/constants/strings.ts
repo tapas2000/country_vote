@@ -5,7 +5,7 @@ export const STRINGS = {
   VOTE_FORM_EMAIL_PLACEHOLDER: 'Email',
   VOTE_FORM_COUNTRY_PLACEHOLDER: 'Country',
   VOTE_FORM_SUBMIT_BUTTON: 'Submit Vote',
-  VOTE_FORM_SUCCESS_MESSAGE: 'Vote submitted successfully!',
+  VOTE_FORM_SUCCESS_MESSAGE: 'Your vote was succesfully submitted',
   VOTE_FORM_ERROR_MESSAGE: 'Failed to submit vote. Please try again.',
   
   // Country Table

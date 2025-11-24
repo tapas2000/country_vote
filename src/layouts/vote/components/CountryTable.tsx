@@ -1,65 +1,64 @@
-import { useCountries } from '../hooks/useCountries';
 import { STRINGS } from '../../../constants/strings';
+import { Country } from '../../../types';
+import SkeletonLoader from '../../../components/SkeletonLoader';
 
-const CountryTable: React.FC = () => {
-  const { countries, isLoading } = useCountries();
+interface CountryTableProps {
+  countries: Country[];
+  isLoading: boolean;
+}
+
+const CountryTable: React.FC<CountryTableProps> = ({ countries, isLoading }) => {
 
   if (isLoading) {
-    return (
-      <div className="base_card">
-        <div className="text-center py-8">
-          <p className="text-gray-600">{STRINGS.LOADING_COUNTRIES}</p>
-        </div>
-      </div>
-    );
+    return <SkeletonLoader />;
   }
 
   return (
-    <div className="base_card">
+    <div className="base_card base_card__no__x_padding">
         <table className="min-w-full">
           <thead>
-            <tr className="border-b border-gray-200">
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
+            <tr>
+              <th className="table_header">
                 {STRINGS.TABLE_HEADER_COUNTRY}
               </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
+              <th className="table_header">
                 {STRINGS.TABLE_HEADER_CAPITAL_CITY}
               </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
+              <th className="table_header">
                 {STRINGS.TABLE_HEADER_REGION}
               </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
+              <th className="table_header">
                 {STRINGS.TABLE_HEADER_SUB_REGION}
               </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
+              <th className="table_header">
                 {STRINGS.TABLE_HEADER_VOTES}
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="">
             {countries.length > 0 ? (
               countries.map((country, index) => (
                 <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-4 py-4 text-sm text-gray-900">
+                  <td className="table_cell">
                     {country.name}
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-600">
-                    {country.capital}
+                  <td className="table_cell">
+                    {Array.isArray(country.capital) ? country.capital.join(', ') : country.capital}
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-600">
+                  <td className="table_cell">
                     {country.region}
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-600">
+                  <td className="table_cell">
                     {country.subRegion}
                   </td>
-                  <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                  <td className="table_cell">
                     {country.votes}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="px-4 py-4 text-center text-sm text-gray-500">
+                <td colSpan={5} className="table_cell text-center">
                   {STRINGS.NO_COUNTRIES_FOUND}
                 </td>
               </tr>
