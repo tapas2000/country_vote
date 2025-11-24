@@ -14,11 +14,11 @@ interface UseCountriesReturn {
 }
 
 export const useCountries = (): UseCountriesReturn => {
-  const [countries, setCountries] = useState([]);
-  const [filteredCountries, setFilteredCountries] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [filteredCountries, setFilteredCountries] = useState<Country[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch countries on mount
   useEffect(() => {
@@ -40,20 +40,20 @@ export const useCountries = (): UseCountriesReturn => {
     try {
       const result = await countryService.getTopCountries();
       
-      if (result.success) {
+      if (result.success && result.data) {
         setCountries(result.data);
         setFilteredCountries(result.data);
       } else {
         setError('Failed to fetch countries');
       }
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 

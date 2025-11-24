@@ -20,15 +20,21 @@ const VoteLayout: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col justify-center md:max-w-[1062px] md:mx-auto space-y-12">
-      {toast.isVisible && (
-        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
-      )}
-
-      <VotingForm
-        onVoteSuccess={handleVoteSuccess}
-        showSuccess={showSuccess}
-        showError={showError}
-      />
+      <div className="min-h-32">
+        {toast.isVisible ? (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={hideToast}
+          />
+        ) : (
+          <VotingForm
+            onVoteSuccess={handleVoteSuccess}
+            showSuccess={showSuccess}
+            showError={showError}
+          />
+        )}
+      </div>
 
       <div className="w-full">
         <div className="mb-6">
