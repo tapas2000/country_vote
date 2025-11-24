@@ -213,10 +213,6 @@ interface Country {
 - **Backend Service**: [country_vote_service](https://github.com/tapas2000/country_vote_service)
 - **Frontend**: [country_vote](https://github.com/tapas2000/country_vote)
 
-## Documentation
-
-- [PROJECT_OVERVIEW.md](./PROJECT_OVERVIEW.md) - Detailed architecture and design decisions
-
 ## Author
 
 **tapas2000** (felipe-08011@hotmail.com)
